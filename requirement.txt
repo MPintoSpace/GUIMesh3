@@ -1,0 +1,4 @@
+pyside2
+shiboken2
+six
+setuptools

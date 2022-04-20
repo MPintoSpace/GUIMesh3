@@ -39,6 +39,7 @@ try:
     from GUIMeshLibs import LoadOP
     from GUIMeshLibs import MaterialManager
     from GUIMeshLibs import WriteGDML
+    from GUIMeshLibs import Write1GDML
 except:
     print("Could not load GUIMesh libraries. Please check if the folder GUIMeshLibs exists and if the files are there.")
 
@@ -50,6 +51,9 @@ def Pressed_Find_FreeCAD_Dir():
     print ("Pressed Find FreeCAD Dir")
     #Import FreeCAD - essential to the whole program
     try:
+        sys.path.append("/usr/lib/freecad-python3/lib")
+        sys.path.append("C:\\FreeCAD_0.18\\bin")
+        sys.path.append("C:/FreeCAD_0.18/bin")
         import FreeCAD
         FreeCAD_status="FreeCAD loaded"
         label_FreeCAD_path.configure(text=FreeCAD_status)
@@ -82,7 +86,7 @@ def Pressed_Read_STEP():
     if (FreeCAD_status=="FreeCAD loaded"):
         STEP_file_status="Opening file..."
         label_STEP_path.configure(text=STEP_file_status)
-        temp_list_of_objects=LoadOP.Load_STEP_File(file_status,Element_List[13])#Load STEP with FreeCAD library - See LoadOP library
+        temp_list_of_objects=LoadOP.Load_STEP_File(file_status,Element_List[13], Material_List)#Load STEP with FreeCAD library - See LoadOP library
         #Check if loading was done properly
         if (temp_list_of_objects==0):
                 tkinter.messagebox.showinfo("Error", "File format or extension is incorrect.")
@@ -188,6 +192,19 @@ def Pressed_Write_GDML():
     print("Pressed_Write_GDML STEP Mesh")
     if len(list_of_objects)>0:
         WriteGDML.Write_Files(list_of_objects, world_dimensions)#See WriteGDML library
+    else:
+        tkinter.messagebox.showinfo("Error", "There are no volumes to mesh.")
+
+
+#################################################################
+############################Write GDML###########################
+#################################################################
+def Pressed_Write_1_GDML():
+    global list_of_objects
+    global world_dimensions
+    print("Pressed_Write_GDML STEP Mesh")
+    if len(list_of_objects)>0:
+        Write1GDML.Write_Files(list_of_objects, world_dimensions) #See WriteGDML library
     else:
         tkinter.messagebox.showinfo("Error", "There are no volumes to mesh.")
 
@@ -345,8 +362,8 @@ p_h = s_h/768.
 buttons_width=int(18*p_w)
 buttons_height=int(2*p_h)
 pos_x=0.1
-pos_y=0.05
-pos_y_os=0.115
+pos_y=0.02
+pos_y_os=0.108
 font_size=20*p_h*p_w
 #root.state("zoomed")
 #Draw interface regions
@@ -408,9 +425,12 @@ button_Create_Material.place(relx=0.1,rely=(pos_y+pos_y_os*5),relwidth=0.8, relh
 #Write GDML button
 button_Write_GDML = tk.Button(button_menu, text = 'Write GDML',font=("Helvetica", int(12*p_w)), command = Pressed_Write_GDML,bg="#e0e0d1")
 button_Write_GDML.place(relx=0.1,rely=(pos_y+pos_y_os*6),relwidth=0.8, relheight=0.1)
+#Write 1 GDML button
+button_Write_1_GDML = tk.Button(button_menu, text = 'Write 1 GDML',font=("Helvetica", int(12*p_w)), command = Pressed_Write_1_GDML,bg="#e0e0d1")
+button_Write_1_GDML.place(relx=0.1,rely=(pos_y+pos_y_os*7),relwidth=0.8, relheight=0.1)
 #Exit button
 button_exit = tk.Button(button_menu, text = 'Exit Program',font=("Helvetica", int(12*p_w)), command = Pressed_Exit_Program,bg="#e0e0d1")
-button_exit.place(relx=0.1,rely=(pos_y+pos_y_os*7),relwidth=0.8, relheight=0.1)
+button_exit.place(relx=0.1,rely=(pos_y+pos_y_os*8),relwidth=0.8, relheight=0.1)
 
 #####################################################################################
 ###################################Volume Lists######################################
