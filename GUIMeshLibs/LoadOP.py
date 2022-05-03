@@ -42,8 +42,43 @@ def Find_FreeCAD_Dir():
         else:
             return 0
 
+
+def find_material_from_label(label):
+    arr = label.replace('\r', '').split("_MATDEF_")
+    if len(arr) > 1:
+        return arr[1]
+
+
+def find_material(label, material_list, material):
+    obj_material = material
+    material_def = find_material_from_label(label)
+    if material_def:
+        found_m = False
+        for m in material_list:
+            if m.Name == material_def:
+                obj_material = m
+                found_m = True
+                break
+        if not found_m:
+            print("[Load_STEP_File]::: ERROR::: " + material_def + " not found for object " + label + ". Define it yourself")
+    return obj_material
+
+## freecad 0.19
+# def find_precision(shape, precision):
+#     opt_precision = precision
+#     triangles = shape.tessellate(opt_precision, True)
+#     tolerance = 100000
+#     if triangles[1].__len__() > tolerance:
+#         triangles2 = shape.tessellate(opt_precision * 2, True)
+#         while triangles[1].__len__() > triangles2[1].__len__() and triangles[1].__len__() > tolerance:
+#             opt_precision = opt_precision * 2
+#             triangles = triangles2
+#             triangles2 = shape.tessellate(opt_precision * 2, True)
+#     return opt_precision
+
+
 #Add FreeCAD directory to os path
-def Load_STEP_File(doc_status,material):
+def Load_STEP_File(doc_status,material, material_list):
     from GUIMeshLibs import Volumes
     import tkinter.filedialog
     import FreeCAD
@@ -59,19 +94,21 @@ def Load_STEP_File(doc_status,material):
             print("Previous document closed")
         FreeCAD.newDocument("Unnamed")
         FreeCAD.setActiveDocument("Unnamed")
-        try: 
+        try:
             Import.insert(path_to_file,"Unnamed") #FreeCAD attempts to open file - If the format is wrong it will be detected
             print("File read successfuly")
             list_of_objects=[]
             for obj in FreeCAD.ActiveDocument.Objects:
                 try:
-                        if(obj.TypeId=="Part::Feature"):
-                                obj.Label=obj.Label.replace(" ","_")
-                                obj.Label=obj.Label.replace(".","_")
-                                obj.Label=obj.Label.replace("---","_")
-                                list_of_objects.append(Volumes.Volume(obj,material,0.1,1))
+                    if(obj.TypeId == "Part::Feature") and hasattr(obj, "Shape"):
+                        obj.Label = obj.Label.replace(" ", "_")\
+                            .replace(".", "_").replace("---", "_")\
+                            .replace('\r', '').replace(',', '_')
+                        obj_material = find_material(obj.Label, material_list, material)
+                        list_of_objects.append(Volumes.Volume(obj, obj_material, 0.1, 1))
                 except:
-                        continue
+                    print('Part not added: ', obj.Label)
+                    continue
             return list_of_objects
         except:
             print("Error reading file. Format might be incorrect.")
