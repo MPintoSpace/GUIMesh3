@@ -11,8 +11,8 @@ to import this geometries into Geant4
 GUIMesh requires:
 
 * UNIX distribution or Windows (R) 
-* [Python 3.6](https://www.python.org/downloads/release/python-368/) with TKinter extension
-* [FreeCAD](www.freecadweb.org) v0.15 and 0.16
+* [Python 3.8](https://www.python.org/downloads/release/python-368/) with TKinter extension
+* [FreeCAD](www.freecadweb.org) v0.19
 * [Geant4](https://geant4.web.cern.ch/) - although Geant4 is not necessary to run GUIMesh, its output are intended to be imported by it. Versions >10 are recomended.
 
 Note: Since GUIMesh is a python script only its dependencies must be installed.
